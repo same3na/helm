@@ -1,0 +1,23 @@
+{{ $initialScope := . }}
+{{- range $i, $pvc := .Values.pvcs }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $pvc.name }}
+  namespace: {{ $initialScope.Values.namespace }}
+  {{- with $pvc.labels}}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end}}
+spec:
+  storageClassName: {{ $initialScope.Values.volumeClass }}
+  {{- with $pvc.accessModes}}
+  accessModes:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $pvc.storage }}
+{{- end }}
+

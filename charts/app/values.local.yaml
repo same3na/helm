@@ -1,0 +1,251 @@
+---
+
+
+# volumes
+volumeClass: standard
+
+namespace: same3na
+
+secrets:
+  - name: postgres-secret
+    labels:
+      app: postgres
+    data:
+      POSTGRES_PASSWORD: cGFzc3dvcmQ=  # Base64-encoded password (e.g., "password")
+  - name: backend-app-secret
+    labels:
+      app: backend-app
+    data:
+      SPOTIFY_SECRET: NmU2NjRhYTA2ZmI0NDQ0NmIxYTVhY2ViZTA1YjJlYzc=  # Base64-encoded
+      YOUTUBE_API_KEY: QUl6YVN5QS05dDdiQXExU1Z2aWwwbzNFT1FDUHNqVXg3TFlsTkZZ
+      SPOTIFY_ID: NDQwNmRlNWJmM2ExNDU1MTgwNDE4NzczOWQ1ZDc2MTg=
+
+configMaps:
+  - name: postgres-config
+    labels:
+      app: postgres
+    data:
+      POSTGRES_DB: ps_db
+      POSTGRES_USER: ps_user
+  - name: backend-app-config
+    labels:
+      app: backend-app
+    data:
+      PORT: "8000"
+      BASE_URL: http://backend-app:8000
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      DBHOST: postgres
+      DBPORT: "5432"
+      SSLMODE: disable
+      ALLOWED_ORIGINS: "*"
+  - name: features-app-config
+    labels:
+      app: features-app
+    data:
+      PYTHONPATH: src
+      DBHOST: postgres
+      DBPORT: "5432"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+
+pvcs:
+  - name: postgres-volume-claim
+    labels:
+      app: postgres
+    accessModes:
+      - ReadWriteOnce
+    storage: 3Gi
+
+deployments:
+  - name: frontend
+    replicas: 1
+    labels:
+      app: frontend
+    containers:
+    - name: frontend
+      image: same3na/frontend:latest  # Use latest stable version
+      imagePullPolicy: Never
+      ports:
+      - containerPort: 80
+
+  - name: backend-app
+    replicas: 1
+    labels:
+      app: backend-app
+    containers:
+    - name: backend-app
+      image: ghcr.io/same3na/backend:release  # Use latest stable version
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 8000
+      env:
+      - name: DBUSER
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_USER
+      - name: DBNAME
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_DB
+      - name: DBPASS
+        valueFrom:
+          secretKeyRef:
+            name: postgres-secret
+            key: POSTGRES_PASSWORD
+      envFrom:
+      - configMapRef:
+          name: backend-app-config
+      - secretRef:
+          name: backend-app-secret
+
+  - name: features-app
+    replicas: 0
+    labels:
+      app: features-app
+    containers:
+    - name: features-app
+      image: ghcr.io/same3na/features-app:release  # Use latest stable version
+      imagePullPolicy: Always
+      env:
+      - name: DBUSER
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_USER
+      - name: DBNAME
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_DB
+      - name: DBPASS
+        valueFrom:
+          secretKeyRef:
+            name: postgres-secret
+            key: POSTGRES_PASSWORD
+      envFrom:
+      - configMapRef:
+          name: features-app-config
+
+  - name: postgres
+    replicas: 1
+    labels:
+      app: postgres
+    containers:
+    - name: postgres
+      image: postgres:15  # Use latest stable version
+      ports:
+      - containerPort: 5432
+      envFrom:
+      - configMapRef:
+          name: postgres-config
+      - secretRef:
+          name: postgres-secret
+      volumeMounts:
+      - name: postgres-storage
+        mountPath: /var/lib/postgresql/data
+    volumes:
+    - name: postgres-storage
+      persistentVolumeClaim:
+        claimName: postgres-volume-claim
+
+  - name: redis
+    replicas: 1
+    labels:
+      app: redis
+    containers:
+    - name: redis
+      image: redis:latest
+      ports:
+        - containerPort: 6379
+
+services:
+  - name: postgres
+    type: ClusterIP # Change to LoadBalancer if needed
+    selector: postgres
+    labels:
+      app: postgres
+    ports:
+      - protocol: TCP
+        port: 5432
+        targetPort: 5432
+
+  - name: redis
+    type: ClusterIP # Change to LoadBalancer if needed
+    selector: redis
+    labels:
+      app: redis
+    ports:
+      - protocol: TCP
+        port: 6379
+        targetPort: 6379
+
+  - name: backend-app
+    # type: ClusterIP # Change to LoadBalancer if needed
+    type: ClusterIP
+    selector: backend-app
+    labels:
+      app: backend-app
+    ports:
+      - protocol: TCP
+        port: 8000
+        targetPort: 8000
+
+  - name: frontend
+    type: NodePort
+    selector: frontend
+    labels:
+      app: frontend
+    ports:
+      - protocol: TCP
+        port: 3000
+        targetPort: 80
+
+jobs:
+  - name: migrate-job
+    labels:
+      app: migrate
+    backoffLimit: 2
+    containers:
+    - name: migrate-container
+      image: ghcr.io/same3na/migrations:release
+      imagePullPolicy: Always
+      env:
+      - name: DB_USER
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_USER
+      - name: DB_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_DB
+      - name: DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: postgres-secret
+            key: POSTGRES_PASSWORD
+      - name: DB_HOST
+        value: "postgres"
+
+scaledObjects:
+  - name: features-app-scaler
+    targetRef: features-app
+    minReplicaCount: 0  # Scale to 0 when idle
+    maxReplicaCount: 1  # Scale up when events arrive
+    cooldownPeriod: 60  # Wait 60s before scaling down
+    triggers:
+    - type: redis-streams
+      metadata:
+        address: redis.default.svc.cluster.local:6379  # Redis address
+        stream: "mystream"  # Your stream name
+        consumerGroup: "gpu-workers"
+        redisPassword: ""  # Optional: Redis password if set
+        minReplicaCount: "0"  # Min replicas
+        maxReplicaCount: "1"  # Max replicas
+        lagCount: "10"
+        activationLagCount: "1" #

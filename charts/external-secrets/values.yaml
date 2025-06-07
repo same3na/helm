@@ -1,0 +1,7 @@
+external-secrets:
+  installCRDs: true
+  serviceAccount:
+    create: true
+    name: eso-sa
+  webhook:
+    port: 10250

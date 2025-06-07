@@ -1,0 +1,75 @@
+namespace: logging
+
+loki-stack:
+  loki:
+    enabled: true
+    persistence:
+      enabled: false
+    config:
+      table_manager:
+        retention_deletes_enabled: true
+        retention_period: 168h  # 7 days
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+  grafana:
+    enabled: true
+    adminUser: admin
+    adminPassword: N5d9jc3u8JUh7V4xw6qtkX 
+    service:
+      type: ClusterIP
+    resources:
+      requests:
+        cpu: "150m"
+        memory: "200Mi"
+      limits:
+        cpu: "300m"
+        memory: "300Mi"
+    additionalDataSources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://logging-prometheus-server  
+
+  promtail:
+    enabled: false  # we use Fluent Bit instead
+
+  fluent-bit:
+    enabled: true
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
+    config:
+      outputs: |
+        [OUTPUT]
+            name                loki
+            match               *
+            host                logging-loki
+            port                3100
+            label_keys          $kubernetes['namespace_name'], $kubernetes['pod_name']
+            log_level           info
+
+      inputs: |
+        [INPUT]
+            Name              tail
+            Path              /var/log/containers/*.log
+            Parser            docker
+            Tag               kube.*
+            Refresh_Interval  5
+            Mem_Buf_Limit     5MB
+            Skip_Long_Lines   On
+            DB                /var/log/flb_kube.db
+
+    # tolerations:
+    #   - key: "node-role.kubernetes.io/control-plane"
+    #     operator: "Exists"
+    #     effect: "NoSchedule"

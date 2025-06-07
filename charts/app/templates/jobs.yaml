@@ -1,0 +1,22 @@
+{{ $initialScope := . }}
+{{- range $i, $job := .Values.jobs }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $job.name }}
+  namespace: {{ $initialScope.Values.namespace }}
+  {{- with $job.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  template:
+    spec:
+      {{- with $job.containers }}
+      containers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never  # Ensures the job doesn't restart after completion
+  backoffLimit: {{ $job.backoffLimit }}  # Limit retries if the job fails
+{{- end }}

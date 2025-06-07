@@ -1,0 +1,25 @@
+{{ $initialScope := . }}
+{{- range $i, $cert := .Values.certificates }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $cert.name }}
+  namespace: {{ $initialScope.namespace }}
+spec:
+  {{- with $cert.isCA}}
+  isCA: {{ . }}
+  {{- end }}
+  commonName: {{ $cert.name }}
+  secretName: {{ $cert.secret_name }}
+  issuerRef:
+    {{- toYaml $cert.issuerRef | nindent 4 }}
+  duration: 8760h # 1 year
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  {{- with $cert.dnsNames }}
+  dnsNames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

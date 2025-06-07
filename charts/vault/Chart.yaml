@@ -1,0 +1,9 @@
+apiVersion: v2
+name: same3na-vault
+description: Installs the bootstrap component required for the cluster
+version: 0.1.0
+
+dependencies:
+  - name: vault
+    version: 0.30.0
+    repository: https://helm.releases.hashicorp.com

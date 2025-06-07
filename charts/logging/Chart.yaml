@@ -1,0 +1,9 @@
+apiVersion: v2
+name: same3na-logging-chart
+description: FLK stack for logging (Fluent Bit, Loki, Grafana)
+version: 0.1.0
+
+dependencies:
+  - name: loki-stack
+    version: "2.10.2" # use specific version that fits your need
+    repository: "https://grafana.github.io/helm-charts"

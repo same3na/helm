@@ -1,0 +1,43 @@
+{{ $initialScope := . }}
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: redis-scaler
+  namespace: {{ $initialScope.Values.namespace }}
+spec:
+  scaleTargetRef:
+    name: features-app  # Your target resource to scale (e.g., Deployment name)
+  minReplicaCount: 0  # Scale to 0 when idle
+  maxReplicaCount: 1  # Scale up when events arrive
+  cooldownPeriod: 60  # Wait 60s before scaling down
+  triggers:
+    - type: redis-streams
+      metadata:
+        address: redis.same3na.svc.cluster.local:6379  # Redis address
+        stream: "song-added"  # Your stream name
+        consumerGroup: "song-added-grp"
+        redisPassword: ""  # Optional: Redis password if set
+        lagCount: "10"
+        activationLagCount: "1" #
+        pendingEntriesCount: "1"
+
+    - type: redis-streams
+      metadata:
+        address: redis.same3na.svc.cluster.local:6379  # Redis address
+        stream: "get-song-features"  # Your stream name
+        consumerGroup: "get-song-features-grp"
+        redisPassword: ""  # Optional: Redis password if set
+        lagCount: "10"
+        activationLagCount: "1" #
+        pendingEntriesCount: "1"
+
+    - type: redis-streams
+      metadata:
+        address: redis.same3na.svc.cluster.local:6379  # Redis address
+        stream: "get-song-data"  # Your stream name
+        consumerGroup: "get-song-data-grp"
+        redisPassword: ""  # Optional: Redis password if set
+        lagCount: "10"
+        activationLagCount: "1" #
+        pendingEntriesCount: "1"
