@@ -40,6 +40,5 @@ jobs:
       - name: Upgrade Helm release
         run: |
           helm upgrade same3na-chart charts/app \
-            --install \
-            --values ${{ github.event.inputs.valuesFile }} \
-            --set ${{ github.event.inputs.imageName }}=${{ github.event.inputs.imageTag }}
+            -f ${{ github.event.inputs.valuesFile }} \
+            --set ${{ github.event.inputs.setValues }}
