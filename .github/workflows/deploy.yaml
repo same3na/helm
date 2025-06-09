@@ -40,5 +40,5 @@ jobs:
       - name: Upgrade Helm release
         run: |
           helm upgrade same3na-chart charts/app \
-            -f ${{ github.event.inputs.valuesFile }} \
-            --set ${{ github.event.inputs.setValues }}
+            -f ${{ inputs.valuesFile }} \
+            --set ${{ inputs.setValues }}
