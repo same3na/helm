@@ -10,10 +10,12 @@ on:
       setValues:
         description: 'Comma-separated key=value pairs (e.g., backend_image_tag=abc,frontend_image_tag=xyz)'
         required: false
+        type: string
         default: 'backend_image_tag=latest'
       valuesFile:
         description: 'Path to values file (e.g., values.prod.yaml or values.staging.yaml)'
         required: false
+        type: string
         default: 'charts/app/values.prod.yaml'
 jobs:
   deploy:
