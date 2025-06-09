@@ -20,6 +20,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      KUBECONFIG: ${{ github.workspace }}/kubeconfig
 
     steps:
       - name: Checkout Helm repo
@@ -33,8 +35,8 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBECONFIG }}
         run: |
-          echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig
-          export KUBECONFIG=$PWD/kubeconfig
+          echo "$KUBE_CONFIG_DATA" | base64 -d > $KUBECONFIG
+          kubectl version --short  # test it works
 
       - name: Install Helm
         uses: azure/setup-helm@v3
