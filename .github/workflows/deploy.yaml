@@ -5,18 +5,22 @@ permissions:
   actions: read
 
 on:
-  workflow_call:
-    inputs:
-      setValues:
-        description: 'Comma-separated key=value pairs (e.g., backend_image_tag=abc,frontend_image_tag=xyz)'
-        required: false
-        type: string
-        default: 'backend_image_tag=latest'
-      valuesFile:
-        description: 'Path to values file (e.g., values.prod.yaml or values.staging.yaml)'
-        required: false
-        type: string
-        default: 'charts/app/values.prod.yaml'
+  # workflow_call:
+  repository_dispatch:
+    types: [custom-trigger]
+    # inputs:
+    #   setValues:
+    #     description: 'Comma-separated key=value pairs (e.g., backend_image_tag=abc,frontend_image_tag=xyz)'
+    #     required: false
+    #     type: string
+    #     default: 'backend_image_tag=latest'
+    #   valuesFile:
+    #     description: 'Path to values file (e.g., values.prod.yaml or values.staging.yaml)'
+    #     required: false
+    #     type: string
+    #     default: 'charts/app/values.prod.yaml'
+
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,10 +30,6 @@ jobs:
     steps:
       - name: Checkout Helm repo
         uses: actions/checkout@v4
-        with:
-          repository: same3na/helm  
-          ref: main                 
-          path: helm-chart          
 
       - name: Set up Kubeconfig
         env:
@@ -46,6 +46,6 @@ jobs:
 
       - name: Upgrade Helm release
         run: |
-          helm upgrade same3na-chart helm-chart/charts/app \
-            -f helm-chart/${{ inputs.valuesFile }} \
-            --set ${{ inputs.setValues }}
+          helm upgrade same3na-chart charts/app \
+            -f charts/app/values.prod.yaml \
+            --set ${{ github.event.client_payload.set_values }}
