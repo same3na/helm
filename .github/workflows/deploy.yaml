@@ -23,7 +23,11 @@ jobs:
 
     steps:
       - name: Checkout Helm repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          repository: same3na/helm  
+          ref: main                 
+          path: helm-chart          
 
       - name: Set up Kubeconfig
         env:
@@ -39,6 +43,6 @@ jobs:
 
       - name: Upgrade Helm release
         run: |
-          helm upgrade same3na-chart charts/app \
-            -f ${{ inputs.valuesFile }} \
+          helm upgrade same3na-chart helm-chart/charts/app \
+            -f helm-chart/${{ inputs.valuesFile }} \
             --set ${{ inputs.setValues }}
