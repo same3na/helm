@@ -36,6 +36,7 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBECONFIG }}
         run: |
           echo "$KUBE_CONFIG_DATA" | base64 -d > $KUBECONFIG
+          cat "$KUBECONFIG"
           kubectl version
 
       - name: Install Helm
