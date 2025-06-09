@@ -1,0 +1,43 @@
+name: Deploy Helm Chart
+
+permissions:
+  contents: read
+  actions: read
+
+on:
+  workflow_call:
+    inputs:
+      setValues:
+        description: 'Comma-separated key=value pairs (e.g., backend_image_tag=abc,frontend_image_tag=xyz)'
+        required: false
+        default: 'backend_image_tag=latest'
+      valuesFile:
+        description: 'Path to values file (e.g., values.prod.yaml or values.staging.yaml)'
+        required: false
+        default: 'charts/app/values.prod.yaml'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Helm repo
+        uses: actions/checkout@v3
+
+      - name: Set up Kubeconfig
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBECONFIG }}
+        run: |
+          echo "$KUBE_CONFIG_DATA" | base64 -d > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.0
+
+      - name: Upgrade Helm release
+        run: |
+          helm upgrade same3na-chart charts/app \
+            --install \
+            --values ${{ github.event.inputs.valuesFile }} \
+            --set ${{ github.event.inputs.imageName }}=${{ github.event.inputs.imageTag }}

@@ -37,3 +37,58 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 {{- end }}
+
+
+{{- range $i, $depl := .Values.appDeployments }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $depl.name }}
+  namespace: {{ $initialScope.Values.namespace }}
+  {{- with $depl.labels}}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end}}
+spec:
+  replicas: {{ $depl.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $depl.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $depl.name }}
+    spec:
+      {{- with $depl.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $depl.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        {{- range $container := $depl.containers }}
+        - name: {{ $container.name }}
+          image: {{ $container.image }}:{{ index $initialScope.Values.appContainersImageTags $container.name }}
+          imagePullPolicy: {{ $container.imagePullPolicy }}
+          ports:
+            {{- toYaml $container.ports | nindent 12 }}
+          resources:
+            {{- toYaml $container.resources | nindent 12 }}
+          {{- with $container.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $container.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+        {{- end }}
+      {{- with $depl.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

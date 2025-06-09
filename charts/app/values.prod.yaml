@@ -78,14 +78,21 @@ pvcs:
       - ReadWriteOnce
     storage: 3Gi
 
-deployments:
+appContainersImageTags:
+  frontend: release
+  frontend-staging: staging
+  backend-app: release
+  backend-app-staging: staging
+  features-app: release
+
+appDeployments:
   - name: frontend
     replicas: 1
     labels:
       app: frontend
     containers:
     - name: frontend
-      image: ghcr.io/same3na/spa:release  # Use latest stable version
+      image: ghcr.io/same3na/spa 
       imagePullPolicy: Always
       ports:
       - containerPort: 80
@@ -103,7 +110,7 @@ deployments:
       app: frontend-staging
     containers:
     - name: frontend-staging
-      image: ghcr.io/same3na/spa:staging  # Use latest stable version
+      image: ghcr.io/same3na/spa  # Use latest stable version
       imagePullPolicy: Always
       ports:
       - containerPort: 80
@@ -128,7 +135,7 @@ deployments:
         limits:
           cpu: "250m"
           memory: "200Mi"
-      image: ghcr.io/same3na/backend:release  # Use latest stable version
+      image: ghcr.io/same3na/backend  # Use latest stable version
       imagePullPolicy: Always
       ports:
       - containerPort: 8000
@@ -170,7 +177,7 @@ deployments:
         limits:
           cpu: "250m"
           memory: "200Mi"
-      image: ghcr.io/same3na/backend:staging  # Use latest stable version
+      image: ghcr.io/same3na/backend  # Use latest stable version
       imagePullPolicy: Always
       ports:
       - containerPort: 8000
@@ -212,7 +219,7 @@ deployments:
       effect: "NoSchedule"
     containers:
     - name: features-app
-      image: ghcr.io/same3na/features-app:release   # Use latest stable version
+      image: ghcr.io/same3na/features-app   # Use latest stable version
       imagePullPolicy: Always
       resources:
         # requests:
@@ -262,6 +269,8 @@ deployments:
       - configMapRef:
           name: features-app-config
 
+
+deployments:
   - name: postgres
     replicas: 1
     labels:
