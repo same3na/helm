@@ -80,9 +80,9 @@ pvcs:
 
 appContainersImageTags:
   frontend: release
-  frontend-staging: staging
+  # frontend-staging: staging
   backend-app: release
-  backend-app-staging: staging
+  # backend-app-staging: staging
   features-app: release
 
 appDeployments:
@@ -104,23 +104,23 @@ appDeployments:
           cpu: "100m"
           memory: "100Mi"
 
-  - name: frontend-staging
-    replicas: 1
-    labels:
-      app: frontend-staging
-    containers:
-    - name: frontend-staging
-      image: ghcr.io/same3na/spa  # Use latest stable version
-      imagePullPolicy: Always
-      ports:
-      - containerPort: 80
-      resources:
-        requests:
-          cpu: "50m"
-          memory: "60Mi"
-        limits:
-          cpu: "100m"
-          memory: "100Mi"
+  # - name: frontend-staging
+  #   replicas: 1
+  #   labels:
+  #     app: frontend-staging
+  #   containers:
+  #   - name: frontend-staging
+  #     image: ghcr.io/same3na/spa  # Use latest stable version
+  #     imagePullPolicy: Always
+  #     ports:
+  #     - containerPort: 80
+  #     resources:
+  #       requests:
+  #         cpu: "50m"
+  #         memory: "60Mi"
+  #       limits:
+  #         cpu: "100m"
+  #         memory: "100Mi"
 
   - name: backend-app
     replicas: 1
@@ -164,47 +164,47 @@ appDeployments:
       - configMapRef:
           name: backend-app-config
 
-  - name: backend-app-staging
-    replicas: 1
-    labels:
-      app: backend-app-staging
-    containers:
-    - name: backend-app-staging
-      resources:
-        requests:
-          cpu: "100m"
-          memory: "120Mi"
-        limits:
-          cpu: "250m"
-          memory: "200Mi"
-      image: ghcr.io/same3na/backend  # Use latest stable version
-      imagePullPolicy: Always
-      ports:
-      - containerPort: 8000
-      env:
-      - name: DBUSER
-        valueFrom:
-          configMapKeyRef:
-            name: postgres-config
-            key: POSTGRES_USER
-      - name: DBNAME
-        valueFrom:
-          configMapKeyRef:
-            name: postgres-config
-            key: POSTGRES_DB
-      - name: DBPASS
-        valueFrom:
-          secretKeyRef:
-            name: same3na-config-secrets
-            key: POSTGRES_PASSWORD
-      - name: YOUTUBE_API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: same3na-config-secrets
-            key: YOUTUBE_API_KEY
-      envFrom:
-      - configMapRef:
-          name: backend-app-config
+  # - name: backend-app-staging
+  #   replicas: 1
+  #   labels:
+  #     app: backend-app-staging
+  #   containers:
+  #   - name: backend-app-staging
+  #     resources:
+  #       requests:
+  #         cpu: "100m"
+  #         memory: "120Mi"
+  #       limits:
+  #         cpu: "250m"
+  #         memory: "200Mi"
+  #     image: ghcr.io/same3na/backend  # Use latest stable version
+  #     imagePullPolicy: Always
+  #     ports:
+  #     - containerPort: 8000
+  #     env:
+  #     - name: DBUSER
+  #       valueFrom:
+  #         configMapKeyRef:
+  #           name: postgres-config
+  #           key: POSTGRES_USER
+  #     - name: DBNAME
+  #       valueFrom:
+  #         configMapKeyRef:
+  #           name: postgres-config
+  #           key: POSTGRES_DB
+  #     - name: DBPASS
+  #       valueFrom:
+  #         secretKeyRef:
+  #           name: same3na-config-secrets
+  #           key: POSTGRES_PASSWORD
+  #     - name: YOUTUBE_API_KEY
+  #       valueFrom:
+  #         secretKeyRef:
+  #           name: same3na-config-secrets
+  #           key: YOUTUBE_API_KEY
+  #     envFrom:
+  #     - configMapRef:
+  #         name: backend-app-config
 
   - name: features-app
     replicas: 0
