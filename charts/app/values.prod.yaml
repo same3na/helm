@@ -80,10 +80,9 @@ pvcs:
 
 appContainersImageTags:
   frontend: release
-  # frontend-staging: staging
   backend-app: release
-  # backend-app-staging: staging
   features-app: release
+  swagger-api: release
 
 appDeployments:
   - name: frontend
@@ -103,24 +102,6 @@ appDeployments:
         limits:
           cpu: "100m"
           memory: "100Mi"
-
-  # - name: frontend-staging
-  #   replicas: 1
-  #   labels:
-  #     app: frontend-staging
-  #   containers:
-  #   - name: frontend-staging
-  #     image: ghcr.io/same3na/spa  # Use latest stable version
-  #     imagePullPolicy: Always
-  #     ports:
-  #     - containerPort: 80
-  #     resources:
-  #       requests:
-  #         cpu: "50m"
-  #         memory: "60Mi"
-  #       limits:
-  #         cpu: "100m"
-  #         memory: "100Mi"
 
   - name: backend-app
     replicas: 1
@@ -164,47 +145,23 @@ appDeployments:
       - configMapRef:
           name: backend-app-config
 
-  # - name: backend-app-staging
-  #   replicas: 1
-  #   labels:
-  #     app: backend-app-staging
-  #   containers:
-  #   - name: backend-app-staging
-  #     resources:
-  #       requests:
-  #         cpu: "100m"
-  #         memory: "120Mi"
-  #       limits:
-  #         cpu: "250m"
-  #         memory: "200Mi"
-  #     image: ghcr.io/same3na/backend  # Use latest stable version
-  #     imagePullPolicy: Always
-  #     ports:
-  #     - containerPort: 8000
-  #     env:
-  #     - name: DBUSER
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_USER
-  #     - name: DBNAME
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_DB
-  #     - name: DBPASS
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: POSTGRES_PASSWORD
-  #     - name: YOUTUBE_API_KEY
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: YOUTUBE_API_KEY
-  #     envFrom:
-  #     - configMapRef:
-  #         name: backend-app-config
+  - name: swagger-api
+    replicas: 1
+    labels:
+      app: swagger-api
+    containers:
+    - name: swagger-api
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "120Mi"
+        limits:
+          cpu: "250m"
+          memory: "200Mi"
+      image: ghcr.io/same3na/backend-swagger
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 8080
 
   - name: features-app
     replicas: 0
@@ -345,7 +302,6 @@ services:
         targetPort: 6379
 
   - name: backend-app
-    # type: ClusterIP # Change to LoadBalancer if needed
     type: ClusterIP
     selector: backend-app
     labels:
@@ -353,16 +309,6 @@ services:
     ports:
       - protocol: TCP
         port: 8000
-        targetPort: 8000
-
-  - name: backend-app-staging
-    type: ClusterIP
-    selector: backend-app-staging
-    labels:
-      app: backend-app-staging
-    ports:
-      - protocol: TCP
-        port: 8800
         targetPort: 8000
 
   - name: frontend
@@ -375,160 +321,18 @@ services:
         port: 3000
         targetPort: 80
 
-  - name: frontend-staging
+  - name: backend-app-swagger
     type: ClusterIP
-    selector: frontend-staging
+    selector: swagger-api
     labels:
-      app: frontend-staging
+      app: swagger-api
     ports:
       - protocol: TCP
-        port: 3300
-        targetPort: 80
+        port: 8100
+        targetPort: 8080
 
-jobs:
-  # - name: migrate-job
-  #   labels:
-  #     app: migrate
-  #   backoffLimit: 2
-  #   containers:
-  #   - name: migrate-container
-  #     image: ghcr.io/same3na/migrations:release
-  #     imagePullPolicy: Always
-  #     env:
-  #     - name: DB_USER
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_USER
-  #     - name: DB_NAME
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_DB
-  #     - name: DB_PASS
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: POSTGRES_PASSWORD
-  #     - name: DB_HOST
-  #       value: "postgres"
 
-  # - name: group-create
-  #   labels:
-  #     app: group-create
-  #   backoffLimit: 2
-  #   containers:
-  #   - name: groupadd-container
-  #     image: ghcr.io/same3na/backend-cli:release-cli 
-  #     imagePullPolicy: Always
-  #     args: ["groups", "create", "metal", "Group For Metal Users", "true"]
-  #     env:
-  #     - name: DBUSER
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_USER
-  #     - name: DBNAME
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_DB
-  #     - name: DBPASS
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: POSTGRES_PASSWORD
-  #     envFrom:
-  #     - configMapRef:
-  #         name: backend-app-config
-
-  # - name: user-create
-  #   labels:
-  #     app: user-create
-  #   backoffLimit: 2
-  #   containers:
-  #   - name: groupadd-container
-  #     image: ghcr.io/same3na/backend-cli:release-cli 
-  #     imagePullPolicy: Always
-  #     args: ["users", "create", "namir", ""]
-  #     env:
-  #     - name: DBUSER
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_USER
-  #     - name: DBNAME
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_DB
-  #     - name: DBPASS
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: POSTGRES_PASSWORD
-  #     envFrom:
-  #     - configMapRef:
-  #         name: backend-app-config
-
-  # - name: user-assign-to-group
-  #   labels:
-  #     app: user-assign-to-group
-  #   backoffLimit: 2
-  #   containers:
-  #   - name: groupadd-container
-  #     image: ghcr.io/same3na/backend-cli:release-cli 
-  #     imagePullPolicy: Always
-  #     args: ["groups", "addMember", "", ""]
-  #     env:
-  #     - name: DBUSER
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_USER
-  #     - name: DBNAME
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_DB
-  #     - name: DBPASS
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: POSTGRES_PASSWORD
-  #     envFrom:
-  #     - configMapRef:
-  #         name: backend-app-config
-
-  # - name: refresh-failed-songs
-  #   labels:
-  #     app: refresh-failed-songs
-  #   backoffLimit: 2
-  #   containers:
-  #   - name: refresh-failed-songs-container
-  #     image: ghcr.io/same3na/backend-cli:release-cli 
-  #     imagePullPolicy: Always
-  #     args: ["songs", "refreshFeaturesFailedPendingSongs", "moulin"]
-  #     env:
-  #     - name: DBUSER
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_USER
-  #     - name: DBNAME
-  #       valueFrom:
-  #         configMapKeyRef:
-  #           name: postgres-config
-  #           key: POSTGRES_DB
-  #     - name: DBPASS
-  #       valueFrom:
-  #         secretKeyRef:
-  #           name: same3na-config-secrets
-  #           key: POSTGRES_PASSWORD
-  #     envFrom:
-  #     - configMapRef:
-  #         name: backend-app-config
-
+jobs: []
 
 scaledObjects:
   - name: features-app-scaler

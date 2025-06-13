@@ -22,25 +22,25 @@ spec:
             port:
               number: 3000  # Your internal service port
 
-  - host: api-staging.same3na.com
+  - host: api.same3na.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: backend-app-staging
+            name: backend-app
             port:
-              number: 8800  # Your internal service port
-
-  - host: staging.same3na.com
+              number: 8000  # Your internal service port
+              
+  - host: swagger.same3na.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: frontend-staging
+            name: backend-app-swagger
             port:
-              number: 3300  # Your internal service port
+              number: 8100  # Your internal service port
               
