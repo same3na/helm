@@ -6,3 +6,12 @@ helm:
   - name: image.tag
     value: release-e16c6e8
     forcestring: true
+  - name: appContainersImageTags.backend-app
+    value: release-a01f64b
+    forcestring: true
+  - name: appContainersImageTags.frontend
+    value: release-4669b15
+    forcestring: true
+  - name: appContainersImageTags.swagger-api
+    value: release-a01f64b
+    forcestring: true
