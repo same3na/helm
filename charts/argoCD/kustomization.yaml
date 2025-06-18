@@ -16,3 +16,8 @@ patches:
       kind: ConfigMap
       name: argocd-cm
     path: argocd-cm-patch.yaml
+
+  # - target:
+  #     kind: ConfigMap
+  #     name: argocd-image-updater-config
+  #   path: argocd-image-updater-config-patch.yaml
