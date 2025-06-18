@@ -82,7 +82,7 @@ appContainersImageTags:
   frontend: release
   backend-app: release
   features-app: release
-  swagger-api: release
+  swagger-api: release-f338ea7
 
 appDeployments:
   - name: frontend

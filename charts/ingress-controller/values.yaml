@@ -1,2 +1,1 @@
-ingress-nginx:
-  namespaceOverride: ingress-nginx
+namespaceOverride: ingress-nginx

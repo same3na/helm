@@ -1,0 +1,44 @@
+
+
+alertmanager:
+  enabled: false
+  # alertmanagerSpec:
+  #   storage: {}  # No persistence
+  #   resources:
+  #     requests:
+  #       cpu: "50m"
+  #       memory: "64Mi"
+  #     limits:
+  #       cpu: "100m"
+  #       memory: "128Mi"
+
+extraScrapeConfigs: |
+  - job_name: 'prometheus-redis-exporter'
+    static_configs:
+      - targets:
+        - monitoring-prometheus-redis-exporter.monitoring.svc.cluster.local:9121
+server:
+  persistentVolume:
+    enabled: false
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+  # prometheusSpec:
+  #   storageSpec: {}
+  #   # serviceMonitorNamespaceSelector: 
+  #   #   matchLabels:
+  #   #     name: monitoring      
+  #   # serviceMonitorSelector: 
+  #   #   matchExpressions:
+  #   #     - key: app.kubernetes.io/name
+  #   #       operator: In
+  #   #       values:
+  #   #         - prometheus-redis-exporter
+  #   #         - prometheus-node-exporter
+  #   additionalScrapeConfigsSecret:
+  #     name: additional-scrape-configs
+  #     key: additional-scrape-configs.yaml

@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - namespace.yaml
+  - ingress.yaml
+
+helmCharts:
+  - name: prometheus
+    repo: https://prometheus-community.github.io/helm-charts
+    version: 27.11.0
+    releaseName: prometheus
+    valuesFile: prometheus-values.yaml
+
+  - name: prometheus-redis-exporter
+    repo: https://prometheus-community.github.io/helm-charts
+    version: 6.10.0
+    releaseName: redis-exporter
+    valuesFile: redis-exporter-values.yaml

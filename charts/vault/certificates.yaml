@@ -1,0 +1,52 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-ca
+  namespace: vault
+spec:
+  isCA: true
+  commonName: vault-ca
+  secretName: vault-tls-ca
+  issuerRef:
+    name: cert-selfsigned-issuer
+    kind: ClusterIssuer
+  duration: 8760h # 1 year
+  privateKey:
+    algorithm: RSA
+    size: 2048
+
+---
+# vault-intermediate-issuer.yaml
+# uses the vault CA
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: vault-issuer
+  namespace: vault
+spec:
+  ca:
+    secretName: vault-tls-ca
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-server
+  namespace: vault
+spec:
+  commonName: vault-server
+  secretName: vault-tls-server
+  issuerRef:
+    name: vault-issuer
+    kind: Issuer
+  duration: 8760h # 1 year
+  privateKey:
+    algorithm: RSA
+    size: 2048
+  dnsNames:
+    - vault
+    - vault.vault
+    - vault.vault.svc
+    - vault.vault.svc.cluster.local
+    - vault-ui.vault.svc

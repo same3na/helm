@@ -8,32 +8,23 @@
 
 
 ## Ingress
-- `helm install ingress-controller charts/ingress-controller/ -n ingress-nginx --create-namespace`
+- `kustomize build --enable-helm charts/ingress-controller/. | kubectl apply -f -`
 
 ## Cert manager
 - In this project Cert manager is being used to create self-signed certificates authority and certs like the one we created for internal vault communication
-- install dependencies before installing the chart `helm dependency update charts/cert-manager`
-- install `helm install cert-manager charts/cert-manager -n cert-manager --create-namespace`
-- upgrade `helm upgrade cert-manager charts/cert-manager -n cert-manager`
-- uninstall `helm uninstall cert-manager -n cert-manager`
+- `kustomize build --enable-helm charts/cert-manager/. | kubectl apply -f -`
 
 ## logging
-- install dependencies before installing the chart `helm dependency update charts/logging`
-- install the chart in the logging namespace `helm install logging charts/logging -n logging --create-namespace`
-- uninstall the logging chart `helm uninstall logging -n logging`
+- `kustomize build --enable-helm charts/logging/. | kubectl apply -f -`
 
 ## Monitoring
-- install dependencies before installing the chart `helm dependency update charts/monitoring`
-- install the chart in the logging namespace `helm install monitoring charts/monitoring -n monitoring --create-namespace`
-- uninstall the logging chart `helm uninstall monitoring -n monitoring`
+- `kustomize build --enable-helm charts/monitoring/. | kubectl apply -f -`
 
 ## app 
 - upgrade `helm upgrade same3na-chart charts/app -f charts/app/values.prod.yaml`
 
 ## vault
-- install `helm install vault charts/vault -n vault --create-namespace`
-- upgrade `helm upgrade vault charts/vault -n vault`
-- uninstall `helm uninstall vault -n vault`
+- `kustomize build --enable-helm charts/vault/. | kubectl apply -f -`
 
 ### For vault after pods is working and unsealed I need to create policy and role for kubernetes auth
 - login to the pod
@@ -67,8 +58,4 @@
   ```
 
 ## external-secrets
-- install `helm install external-secrets charts/external-secrets -n external-secrets --create-namespace`
-- upgrade `helm upgrade external-secrets charts/external-secrets -n external-secrets`
-- uninstall `helm uninstall external-secrets -n external-secrets`
-
-
+- `kustomize build --enable-helm charts/external-secrets/. | kubectl apply -f -`

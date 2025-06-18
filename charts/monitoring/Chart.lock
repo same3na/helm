@@ -1,9 +1,0 @@
-dependencies:
-- name: prometheus
-  repository: https://prometheus-community.github.io/helm-charts
-  version: 27.11.0
-- name: prometheus-redis-exporter
-  repository: https://prometheus-community.github.io/helm-charts
-  version: 6.10.0
-digest: sha256:85488f3320cee97091f1f108fb30d1e93f874d44038ea953879f297d2cbb3658
-generated: "2025-04-23T07:59:49.87398367+02:00"

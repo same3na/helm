@@ -1,0 +1,16 @@
+serviceMonitor:
+  enabled: false
+  # targets:
+  #   - url: "redis://redis.same3na.svc.cluster.local:6379"  # Replace with your actual Redis service URL
+  #     name: "redis-exporter"  # You can choose a name for this target
+  # namespace: monitoring  # Namespace where the ServiceMonitor will be deployed (adjust to your setup)
+
+redisAddress: redis://redis.same3na.svc.cluster.local:6379
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"

@@ -1,9 +1,0 @@
-apiVersion: v2
-name: same3na-secret-store
-description: secret-store
-version: 0.1.0
-
-dependencies:
-  - name: external-secrets
-    version: 0.17.0
-    repository: https://charts.external-secrets.io
