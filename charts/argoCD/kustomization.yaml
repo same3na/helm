@@ -9,4 +9,10 @@ resources:
   - https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
   - same3na-app-prod-application.yaml
   - ingress.yaml
+  - external-secrets.yaml
 
+patches:
+  - target:
+      kind: ConfigMap
+      name: argocd-cm
+    path: argocd-cm-patch.yaml
