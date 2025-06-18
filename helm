@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: image.name
+    value: ghcr.io/same3na/backend-swagger
+    forcestring: true
+  - name: image.tag
+    value: release-e16c6e8
+    forcestring: true
