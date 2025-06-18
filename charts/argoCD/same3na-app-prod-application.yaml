@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: same3na-prod-app
+  namespace: argocd
+  annotations:
+    # Image Updater Configuration
+    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/same3na/backend,frontend=ghcr.io/same3na/spa,features=ghcr.io/same3na/features-app,swagger=ghcr.io/same3na/backend-swagger
+    argocd-image-updater.argoproj.io/backend.update-strategy: latest
+    argocd-image-updater.argoproj.io/frontend.update-strategy: latest
+    argocd-image-updater.argoproj.io/features.update-strategy: latest
+    argocd-image-updater.argoproj.io/swagger.update-strategy: latest
+    argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^release-[a-z0-9]+$
+    argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^release-[a-z0-9]+$
+    argocd-image-updater.argoproj.io/features.allow-tags: regexp:^release-[a-z0-9]+$
+    argocd-image-updater.argoproj.io/swagger.allow-tags: regexp:^release-[a-z0-9]+$
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/write-back-target: helm
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/same3na/helm.git
+    targetRevision: HEAD
+    path: ./charts/app
+    helm:
+      valueFiles:
+        - values.yaml
+        - values.prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: same3na
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

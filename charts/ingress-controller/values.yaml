@@ -1,1 +1,4 @@
 namespaceOverride: ingress-nginx
+controller:
+  admissionWebhooks:
+    enabled: true

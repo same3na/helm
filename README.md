@@ -59,3 +59,6 @@
 
 ## external-secrets
 - `kustomize build --enable-helm charts/external-secrets/. | kubectl apply -f -`
+
+## argoCD
+- `kustomize build --enable-helm charts/argoCD/. | kubectl apply -f -`
