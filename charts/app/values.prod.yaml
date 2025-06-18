@@ -79,10 +79,10 @@ pvcs:
     storage: 3Gi
 
 appContainersImageTags:
-  frontend: release
-  backend-app: release
-  features-app: release
-  swagger-api: release
+  frontend: ""
+  backend-app: ""
+  features-app: ""
+  swagger-api: ""
 
 appDeployments:
   - name: frontend
