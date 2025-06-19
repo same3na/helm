@@ -7,7 +7,7 @@ helm:
     value: release-a01f64b
     forcestring: true
   - name: appContainersImageTags.frontend
-    value: release-4669b15
+    value: release-d2bf08f
     forcestring: true
   - name: appContainersImageTags.swagger-api
     value: release-a01f64b
