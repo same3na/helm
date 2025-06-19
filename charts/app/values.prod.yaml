@@ -1,4 +1,5 @@
 ---
+namespace: same3na
 
 volumeClass: csi-cinder-high-speed
 

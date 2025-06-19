@@ -5,7 +5,8 @@ metadata:
   namespace: argocd
   annotations:
     # Image Updater Configuration
-    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/same3na/backend,frontend=ghcr.io/same3na/spa,features=ghcr.io/same3na/features-app,swagger=ghcr.io/same3na/backend-swagger
+    argocd-image-updater.argoproj.io/image-list: "backend=ghcr.io/same3na/backend,frontend=ghcr.io/same3na/spa,features=ghcr.io/same3na/features-app,swagger=ghcr.io/same3na/backend-swagger"
+    argocd-image-updater.argoproj.io/git-branch: main
     argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/features.update-strategy: newest-build
@@ -18,7 +19,7 @@ metadata:
     argocd-image-updater.argoproj.io/frontend.helm.image-tag: appContainersImageTags.frontend
     argocd-image-updater.argoproj.io/features.helm.image-tag: appContainersImageTags.features-app
     argocd-image-updater.argoproj.io/swagger.helm.image-tag: appContainersImageTags.swagger-api
-    argocd-image-updater.argoproj.io/write-back-path: charts/app
+    # argocd-image-updater.argoproj.io/write-back-path: charts/app
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/write-back-target: helm
 spec:
@@ -26,7 +27,7 @@ spec:
   source:
     repoURL: https://github.com/same3na/helm.git
     targetRevision: HEAD
-    path: ./charts/app
+    path: charts/app
     helm:
       valueFiles:
         - values.yaml
