@@ -15,10 +15,10 @@ metadata:
     argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^release-[a-z0-9]+$
     argocd-image-updater.argoproj.io/features.allow-tags: regexp:^release-[a-z0-9]+$
     argocd-image-updater.argoproj.io/swagger.allow-tags: regexp:^release-[a-z0-9]+$
-    argocd-image-updater.argoproj.io/backend.helm.image-tag: appContainersImageTags.backend-app
-    argocd-image-updater.argoproj.io/frontend.helm.image-tag: appContainersImageTags.frontend
-    argocd-image-updater.argoproj.io/features.helm.image-tag: appContainersImageTags.features-app
-    argocd-image-updater.argoproj.io/swagger.helm.image-tag: appContainersImageTags.swagger-api
+    argocd-image-updater.argoproj.io/backend.helm-values: appContainersImageTags.backend-app
+    argocd-image-updater.argoproj.io/frontend.helm-values: appContainersImageTags.frontend
+    argocd-image-updater.argoproj.io/features.helm-values: appContainersImageTags.features-app
+    argocd-image-updater.argoproj.io/swagger.helm-values: appContainersImageTags.swagger-api
     # argocd-image-updater.argoproj.io/write-back-path: charts/app
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/write-back-target: helm
@@ -30,7 +30,6 @@ spec:
     path: charts/app
     helm:
       valueFiles:
-        - values.yaml
         - values.prod.yaml
   destination:
     server: https://kubernetes.default.svc
