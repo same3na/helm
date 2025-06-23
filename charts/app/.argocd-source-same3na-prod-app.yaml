@@ -4,7 +4,7 @@ helm:
     value: ghcr.io/same3na/backend-swagger
     forcestring: true
   - name: appContainersImageTags.backend-app
-    value: release-a01f64b
+    value: release-bba2fc7
     forcestring: true
   - name: appContainersImageTags.frontend
     value: release-d2bf08f
