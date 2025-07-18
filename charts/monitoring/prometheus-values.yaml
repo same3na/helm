@@ -16,7 +16,7 @@ extraScrapeConfigs: |
   - job_name: 'prometheus-redis-exporter'
     static_configs:
       - targets:
-        - monitoring-prometheus-redis-exporter.monitoring.svc.cluster.local:9121
+        - redis-exporter-prometheus-redis-exporter.monitoring.svc.cluster.local:9121
 server:
   persistentVolume:
     enabled: false

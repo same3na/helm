@@ -19,6 +19,8 @@
 
 ## Monitoring
 - `kustomize build --enable-helm charts/monitoring/. | kubectl apply -f -`
+- Delete namespace to remove all `kubectl delete namespace monitoring`
+
 
 ## app 
 - upgrade `helm upgrade same3na-chart charts/app -f charts/app/values.prod.yaml`

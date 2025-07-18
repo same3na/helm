@@ -60,6 +60,7 @@ configMaps:
       DBPORT: "5432"
       SSLMODE: disable
       ALLOWED_ORIGINS: "*"
+      FEATURES_SERVER_URL: http://features-app-server:8881
   - name: features-app-config
     labels:
       app: features-app
@@ -163,6 +164,56 @@ appDeployments:
       imagePullPolicy: Always
       ports:
       - containerPort: 8080
+
+  - name: features-app-server
+    replicas: 0
+    labels:
+      app: features-app-server
+    containers:
+    - name: features-app-server
+      image: ghcr.io/same3na/features-app-server   # Use latest stable version
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 8881
+      env:
+      - name: DBUSER
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_USER
+      - name: DBNAME
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_DB
+      - name: DBPASS
+        valueFrom:
+          secretKeyRef:
+            name: same3na-config-secrets
+            key: POSTGRES_PASSWORD
+      - name: SPOTIFY_ID
+        valueFrom:
+          secretKeyRef:
+            name: same3na-config-secrets
+            key: SPOTIFY_ID
+      - name: SPOTIFY_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: same3na-config-secrets
+            key: SPOTIFY_SECRET
+      - name: YOUTUBE_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: same3na-config-secrets
+            key: YOUTUBE_API_KEY
+      - name: YOUTUBE_COOKIES
+        valueFrom:
+          secretKeyRef:
+            name: same3na-config-secrets
+            key: YOUTUBE_COOKIES
+      envFrom:
+      - configMapRef:
+          name: features-app-config
 
   - name: features-app
     replicas: 0
@@ -331,6 +382,16 @@ services:
       - protocol: TCP
         port: 8100
         targetPort: 8080
+
+  - name: features-app-server
+    type: ClusterIP
+    selector: features-app-server
+    labels:
+      app: features-app-server
+    ports:
+      - protocol: TCP
+        port: 8881
+        targetPort: 8881
 
 
 jobs: []
