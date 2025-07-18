@@ -3,8 +3,6 @@ namespace: same3na
 
 volumeClass: csi-cinder-high-speed
 
-namespace: same3na
-
 external_secrets:
   - name: same3na-config-secrets
     secretStoreRef:
@@ -85,6 +83,7 @@ appContainersImageTags:
   backend-app: release
   features-app: release
   swagger-api: release
+  features-app-server: release
 
 appDeployments:
   - name: frontend
@@ -165,16 +164,30 @@ appDeployments:
       ports:
       - containerPort: 8080
 
-  - name: features-app-server
-    replicas: 1
+
+  - name: features-app
+    replicas: 0
     labels:
-      app: features-app-server
+      app: features-app
+    nodeSelector:
+      my-pool-gpu: "true"  # Target only GPU nodes
+    tolerations:
+    - key: "analyze-features"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
     containers:
-    - name: features-app-server
-      image: ghcr.io/same3na/features-app-server   # Use latest stable version
+    - name: features-app
+      image: ghcr.io/same3na/features-app   # Use latest stable version
       imagePullPolicy: Always
-      ports:
-      - containerPort: 8881
+      resources:
+        # requests:
+        #   cpu: "500m"
+        #   memory: "200Mi"
+        limits:
+          # cpu: "1000m"
+          # memory: "700Mi"
+          # nvidia.com/gpu: 1  # Request 1 GPU
       env:
       - name: DBUSER
         valueFrom:
@@ -215,10 +228,10 @@ appDeployments:
       - configMapRef:
           name: features-app-config
 
-  - name: features-app
-    replicas: 0
+  - name: features-app-server
+    replicas: 1
     labels:
-      app: features-app
+      app: features-app-server
     nodeSelector:
       my-pool-gpu: "true"  # Target only GPU nodes
     tolerations:
@@ -227,8 +240,8 @@ appDeployments:
       value: "true"
       effect: "NoSchedule"
     containers:
-    - name: features-app
-      image: ghcr.io/same3na/features-app   # Use latest stable version
+    - name: features-app-server
+      image: ghcr.io/same3na/features-app-server   # Use latest stable version
       imagePullPolicy: Always
       resources:
         # requests:
@@ -383,7 +396,7 @@ services:
         port: 8100
         targetPort: 8080
 
-  - name: features-app-server
+  - name: feature-app-server
     type: ClusterIP
     selector: features-app-server
     labels:
