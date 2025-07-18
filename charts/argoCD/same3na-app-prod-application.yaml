@@ -5,20 +5,23 @@ metadata:
   namespace: argocd
   annotations:
     # Image Updater Configuration
-    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/same3na/backend,frontend=ghcr.io/same3na/spa,features=ghcr.io/same3na/features-app,swagger=ghcr.io/same3na/backend-swagger
+    argocd-image-updater.argoproj.io/image-list: backend=ghcr.io/same3na/backend,frontend=ghcr.io/same3na/spa,features=ghcr.io/same3na/features-app,featuresServer=ghcr.io/same3na/features-app-server,swagger=ghcr.io/same3na/backend-swagger
     argocd-image-updater.argoproj.io/git-branch: main
     argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/features.update-strategy: newest-build
     argocd-image-updater.argoproj.io/swagger.update-strategy: newest-build
+    argocd-image-updater.argoproj.io/featuresServer.update-strategy: newest-build
     argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^release-[a-z0-9]+$
     argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^release-[a-z0-9]+$
     argocd-image-updater.argoproj.io/features.allow-tags: regexp:^release-[a-z0-9]+$
     argocd-image-updater.argoproj.io/swagger.allow-tags: regexp:^release-[a-z0-9]+$
+    argocd-image-updater.argoproj.io/featuresServer.allow-tags: regexp:^release-[a-z0-9]+$
     argocd-image-updater.argoproj.io/backend.helm.image-tag: appContainersImageTags.backend-app
     argocd-image-updater.argoproj.io/frontend.helm.image-tag: appContainersImageTags.frontend
     argocd-image-updater.argoproj.io/features.helm.image-tag: appContainersImageTags.features-app
     argocd-image-updater.argoproj.io/swagger.helm.image-tag: appContainersImageTags.swagger-api
+    argocd-image-updater.argoproj.io/featuresServer.helm.image-tag: appContainersImageTags.features-app-server
     argocd-image-updater.argoproj.io/write-back-method: git
 spec:
   project: default

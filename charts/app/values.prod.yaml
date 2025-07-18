@@ -400,7 +400,33 @@ services:
         targetPort: 8881
 
 
-jobs: []
+jobs: 
+  - name: migrate-job
+    labels:
+      app: migrate
+    backoffLimit: 2
+    containers:
+    - name: migrate-container
+      image: ghcr.io/same3na/migrations:release
+      imagePullPolicy: Always
+      env:
+      - name: DB_USER
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_USER
+      - name: DB_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: postgres-config
+            key: POSTGRES_DB
+      - name: DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: same3na-config-secrets
+            key: POSTGRES_PASSWORD
+      - name: DB_HOST
+        value: "postgres"
 
 scaledObjects:
   - name: features-app-scaler
