@@ -232,13 +232,6 @@ appDeployments:
     replicas: 1
     labels:
       app: features-app-server
-    nodeSelector:
-      my-pool-gpu: "true"  # Target only GPU nodes
-    tolerations:
-    - key: "analyze-features"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
     containers:
     - name: features-app-server
       image: ghcr.io/same3na/features-app-server   # Use latest stable version
