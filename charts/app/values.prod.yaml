@@ -165,8 +165,7 @@ appDeployments:
       ports:
       - containerPort: 8080
 
-  - name: features-app-server
-    replicas: 0
+    replicas: 1
     labels:
       app: features-app-server
     containers:
