@@ -389,7 +389,7 @@ services:
         port: 8100
         targetPort: 8080
 
-  - name: feature-app-server
+  - name: features-app-server
     type: ClusterIP
     selector: features-app-server
     labels:
