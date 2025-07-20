@@ -15,3 +15,6 @@ helm:
   - name: appContainersImageTags.features-app-server
     value: release-d9f4804
     forcestring: true
+  - name: appContainersImageTags.features-app
+    value: release-7183bbd
+    forcestring: true
